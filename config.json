@@ -1,5 +1,5 @@
 {
-    "name": "Mnist_LeNet",
+    "name": "AlexNet",
     "cuda": true,
     "gpu": 0,
     "data_loader": {
@@ -24,7 +24,7 @@
         "weight_decay": 0
     },
     "loss": "my_loss",
-    "metrics": ["my_metric", "my_metric2"],
+    "metrics": ["accuracy"],
     "trainer": {
         "epochs": 1000,
         "save_dir": "saved/",
@@ -33,7 +33,7 @@
         "monitor": "val_loss",
         "monitor_mode": "min"
     },
-    "arch": "MnistModel", 
+    "arch": "AlexNetModel", 
     "model": {
 
     }

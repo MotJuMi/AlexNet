@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format='')
 def main(config, resume):
     train_logger = Logger()
 
-    data_loader = MnistDataLoader(config)
+    data_loader = ImageNetDataLoader(config)
     valid_data_loader = data_loader.split_validation()
 
     model = eval(config['arch'])(config['model'])
@@ -38,7 +38,7 @@ def main(config, resume):
 if __name__ == '__main__':
     logger = logging.getLogger()
 
-    parser = argparse.ArgumentParser(description='PyTorch Template')
+    parser = argparse.ArgumentParser(description='AlexNet ImageNet PyTorch')
     parser.add_argument('-c', '--config', default=None, type=str,
                         help='config file path (default: None)')
     parser.add_argument('-r', '--resume', default=None, type=str,
