@@ -9,10 +9,12 @@ model_urls = {
 }
 
 class AlexNetModel(nn.Module):
-    def __init__(self, num_classes=1000):
+    def __init__(self, config, num_classes=1000):
         super(AlexNet, self).__init__()
         # in_channels, out_channels, kernel_size, stride, padding
         # pool_size, pool_stride
+        self.config = config
+        self.init_weights = self.config['model']['init_weights']
         self.conv_pool_params = {
             (3, 96, 11, 4, 2, 3, 2),
             (96, 256, 5, 1, 2, 3, 2),
@@ -43,12 +45,14 @@ class AlexNetModel(nn.Module):
                 for params in self.fc_params
             )
         )
+        if self.init_weights:
+            self.initialize_weights()
 
     def conv_pool_layer(in_channels, out_channels, kernel_size, stride,
                         padding, pool_size, pool_stride):
         return nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding),
-            nn.ReLU(inplace=True),
+            #nn.ReLU(inplace=True),
             LocalResponseNorm(n=5, alpha=1e-4, beta=0.75, k=2)
             nn.MaxPool2d(kernel_size=pool_size, stride=pool_stride)
         )
@@ -56,7 +60,7 @@ class AlexNetModel(nn.Module):
     def conv_layer(in_channels, out_channels, kernel_size, stride, padding):
         return nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding),
-            nn.ReLU(inplace=True),
+            #nn.ReLU(inplace=True),
         )
 
     def fc_layer(in_features, out_features, last=False):
@@ -68,6 +72,18 @@ class AlexNetModel(nn.Module):
                 nn.Linear(in_features, out_features),
                 nn.ReLU(inplace=True)
             )
+
+    def initialize_weights(self):
+        for module in self.modules():
+            if isinstance(module, nn.Conv2d):
+                nn.init.kaiming_normal_(module.weight, 
+                                        mode='fan_out',
+                                        nonlinearity='relu')
+                if module.bias is not None:
+                    nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.Linear):
+                nn.init.constant_(module.weight, 0, 0.01)
+                nn.init.constant_(module.bias, 0)
 
     def forward(self, x):
         x = self.features(x)
@@ -76,10 +92,12 @@ class AlexNetModel(nn.Module):
         return F.log_softmax(x, dim=1)
 
 class AlexNet(nn.Module):
-    def __init__(self, num_classes=1000):
+    def __init__(self, config, num_classes=1000):
         super(AlexNet, self).__init__()
         # in_channels, out_channels, kernel_size, stride, padding
         # pool_size, pool_stride
+        self.config = config
+        self.init_weights = self.config['model']['init_weights']
         self.conv_pool_params = {
             (3, 96, 11, 4, 2, 3, 2),
             (96, 256, 5, 1, 2, 3, 2),
@@ -110,12 +128,14 @@ class AlexNet(nn.Module):
                 for params in self.fc_params
             )
         )
+        if self.init_weights:
+            self.initialize_weights()
 
     def conv_pool_layer(in_channels, out_channels, kernel_size, stride,
                         padding, pool_size, pool_stride):
         return nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding),
-            nn.ReLU(inplace=True),
+            #nn.ReLU(inplace=True),
             LocalResponseNorm(n=5, alpha=1e-4, beta=0.75, k=2)
             nn.MaxPool2d(kernel_size=pool_size, stride=pool_stride)
         )
@@ -123,7 +143,7 @@ class AlexNet(nn.Module):
     def conv_layer(in_channels, out_channels, kernel_size, stride, padding):
         return nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding),
-            nn.ReLU(inplace=True),
+            #nn.ReLU(inplace=True),
         )
 
     def fc_layer(in_features, out_features, last=False):
@@ -135,6 +155,18 @@ class AlexNet(nn.Module):
                 nn.Linear(in_features, out_features),
                 nn.ReLU(inplace=True)
             )
+
+    def initialize_weights(self):
+        for module in self.modules():
+            if isinstance(module, nn.Conv2d):
+                nn.init.kaiming_normal_(module.weight, 
+                                        mode='fan_out',
+                                        nonlinearity='relu')
+                if module.bias is not None:
+                    nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.Linear):
+                nn.init.constant_(module.weight, 0, 0.01)
+                nn.init.constant_(module.bias, 0)
 
     def forward(self, x):
         x = self.features(x)
